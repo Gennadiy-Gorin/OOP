@@ -18,6 +18,7 @@ public:
 	Faculty();
 	Faculty(string);
 	void SetFaculty();
+	void SetFaculty(string);
 	void ShowFaculty();
 	~Faculty();
 
@@ -26,7 +27,7 @@ private:
 };
 Faculty::Faculty()
 {
-	faculty = "N/E";
+	faculty = "N/A";
 }
 Faculty::Faculty(string name)
 {
@@ -42,13 +43,17 @@ void Faculty::SetFaculty( ) {
 	getline(cin, faculty,'\n');
 	
 }
+void Faculty::SetFaculty(string faculty) {
+	this->faculty = faculty;
+
+}
 Faculty::~Faculty()
 {
 }
 
 
 
-class Student :public Faculty {
+class Student  {
 public:
 	Student();
 	Student(string,string, int);
@@ -58,25 +63,28 @@ public:
 	void ChangeField();
 	double StudentProgress();
 	void SetName();
+	 string GetName();
 	void ChangeMarks();
 	~Student();
 private:
+	Faculty faculty;
 	string FIO;
 	int Birth_Year;
 	exam rezults[5];
 
 };
 
-Student::Student():Faculty() {
+Student::Student() {
 	string subj[5] = { "Math","Physics","Economy","Programming","Foreign Language" };
-	FIO = "N/E";
+	FIO = "N/A";
 	Birth_Year=0;
 	for (int i = 0; i < 5; i++) {
 		rezults[i].subject =subj[i] ;
 		rezults[i].mark = 0;
 	}
 }
-Student::Student(string faculty,string name ,int year):Faculty(faculty){
+Student::Student(string faculty,string name ,int year){
+	this->faculty.SetFaculty(faculty);
 	string subj[5] = { "Math","Physics","Economy","Programming","Foreign Language" };
 	FIO =name;
 	Birth_Year = year;
@@ -86,8 +94,14 @@ Student::Student(string faculty,string name ,int year):Faculty(faculty){
 		rezults[i].mark = 0;
 	}
 }
+ string Student::GetName() {
+	return FIO;
+
+}
 void Student::setInfo() {
-	SetFaculty();
+	cout << "Enter FIO of a student: ";
+	getline(cin, FIO, '\n');
+	faculty.SetFaculty();
 	Birth_Year = prov("Enter Birth year: ",2004);
 	for (int i = 0; i < 5; i++) {
 		cout << "Enter " << rezults[i].subject << " grade: ";
@@ -108,11 +122,16 @@ void Student::SetName() {
 }
 void Student::ShowStudent() {
 	cout << "FIO: " << FIO << endl;
-	ShowFaculty();
-	cout << "Birth: " << Birth_Year << endl;
+	faculty.ShowFaculty();
+	if (Birth_Year == 0) {
+		cout << "Birth: N/A" << endl;
+	}
+	else {
+		cout << "Birth: " << Birth_Year << endl;
+	}
 	cout << "Exam marks:\n";
 	for (int i = 0; i < 5; i++) {
-		cout << rezults[i].subject << ": ";
+		cout << rezults[i].subject << "- ";
 		cout << rezults[i].mark << endl;
 	}
 
@@ -143,7 +162,7 @@ void Student::ChangeField() {
 			getline(cin, FIO, '\n');
 			break; }
 		case 2: {
-			SetFaculty();
+			faculty.SetFaculty();
 			break;	}
 		case 3: {
 			Birth_Year = prov("Enter Birth year: ", 2004);
@@ -205,14 +224,16 @@ int main() {
 			"3-Show list of students.\n"
 			"4-Show info about one student\n"
 			"5-Change exam marks of a student.\n"
-			"6-Change one info about a student.\n"
+			"6-Edit a student.\n"
 			"7-Show progress of students.\n"
 			"0-Close program." << endl;
 		switch (_getch()) {
 		case'1': {
 			for (i = 0; i < size; i++) {
-				List[i].SetName();
-				cout << endl;
+				if (List[i].GetName() == "N/A") {
+					List[i].SetName();
+					cout << endl;
+				}
 			}
 			break; }
 		case '2': {
