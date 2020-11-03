@@ -74,7 +74,7 @@ private:
 
 };
 
-Student::Student() {
+Student::Student():Faculty() {
 	string subj[5] = { "Math","Physics","Economy","Programming","Foreign Language" };
 	FIO = "N/A";
 	Birth_Year=0;
