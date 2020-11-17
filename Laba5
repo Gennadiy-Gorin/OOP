@@ -1,0 +1,573 @@
+/*4. Создать базовый класс «печатная продукция», включающий тип и 
+название печатной продукции, количество страниц, издательство, данные об 
+авторе (тип данных строка). Разработать набор дочерних классов для класса 
+«Печатная продукция». Реализовать класс «Отдел», включающий в себя 
+название отдела, тип производимых печатных изданий, массив фактически 
+произведенных печатных изданий. Написать программу, позволяющую 
+добавлять и удалять печатные издания разных видов в/из отдела. 
+Использовать конструктор с параметрами, конструктор без параметров, 
+конструктор копирования. В класс добавить необходимый набор полей и 
+методов (минимум два поля и два метода) на свое усмотрение. 
+Предусмотреть метод для записи полученных данных в файл. 
+*/
+
+
+
+#include <iostream>
+#include <conio.h>
+#include <string>
+#include <vector>
+#include <fstream>
+
+using namespace std;
+
+float prov(const char*);
+
+int prov(const char*,int);
+
+class PrintedProducts
+{
+public:
+	PrintedProducts();
+	PrintedProducts(string,string,int,float,string,string);
+	virtual void print();
+	virtual void SetInfo(string);
+	virtual void InFile(string,string);
+	virtual string FormBlock(int);
+	~PrintedProducts();
+
+private:
+	string type;
+	string name;
+	int NumberOfPages;
+	float price;
+	string Publisher ;
+	string Author;
+
+};
+
+PrintedProducts::PrintedProducts()
+{
+	type = "N/A";
+	name = "N/A";
+	NumberOfPages = 0;
+	price = 0;
+	Publisher = "N/A";
+	Author = "N/A";
+}
+
+PrintedProducts::PrintedProducts(string type, string name, int NumberOfPages, float price, string Publisher, string Author) {
+	this->type = type;
+	this->name = name;
+	this->NumberOfPages = NumberOfPages;
+	this->price = price;
+	this->Publisher = Publisher;
+	this->Author = Author;
+}
+
+void PrintedProducts::print() {
+	cout << type << ":"<<"\t"<< name<<endl;
+	cout << "Number of pages:" << NumberOfPages << endl;
+	cout << "Price tag:\t" << price << "$" << endl;
+	cout << "Published by:\t" << Publisher << endl;
+	if (Author == "") cout << "Author in not identified.\n";
+	else cout << "Written by:\t" << Author << endl;
+}
+
+string PrintedProducts:: FormBlock(int CurrentNumber){
+	string Block="\n";
+	Block += to_string(CurrentNumber);
+	Block += ".\nType:\t";
+	Block += type;
+	Block += "\nName:\t";
+	Block += name;
+	Block += "\nPages:\t";
+	Block += to_string(NumberOfPages);
+	Block += "\nPrice:\t";
+	Block += to_string(price);
+	Block += "$\nPublisher:\t";
+	Block += Publisher;
+	Block += "\nAuthor:\t";
+	Block += Author;
+	Block += "\n";
+	return Block;
+}
+
+void PrintedProducts::InFile(string FileName,string Block) {
+	ofstream file;
+	file.open(FileName,ios::app);
+	if (file.is_open()) {
+		file<<Block;
+	}
+	file.close();
+}
+
+void PrintedProducts::SetInfo(string type) {
+	this->type = type;
+	cout << "Enter name of the " << type << " : ";
+	getline(cin, name, '\n');
+	NumberOfPages = int(prov("Enter the number of pages: "));
+	cout << "Enter the price of the "<<type<<" : ";
+	price=prov(" ");
+	cout << "Enter the publisher: ";
+	getline(cin, Publisher, '\n');
+	cout << "Enter Author (if there is no author press enter): ";
+		getline(cin, Author, '\n');
+		if (Author == "") {
+			Author = "N/A";
+		}
+}
+
+PrintedProducts::~PrintedProducts()
+{
+}
+
+
+
+class Book :public PrintedProducts
+{
+public:
+	Book();
+	void print();
+	void SetInfo(string);
+    string FormBlock(int);
+	~Book();
+
+private:
+	int PublishYear;
+	string genre;
+};
+
+Book::Book()
+{
+	PublishYear = 0;
+	genre = "N/A";
+}
+
+void Book::print() {
+	PrintedProducts::print();
+	cout << "Published in:\t" << PublishYear << endl;
+	cout << "Genre of the book:\t" << genre << endl;
+}
+
+string Book::FormBlock(int Currentnumber) {
+	string Block = PrintedProducts::FormBlock(Currentnumber);
+	Block += "Published in:\t";
+	Block += to_string(PublishYear);
+	Block += "\nGenre:\t";
+	Block += genre;
+	Block += "\n";
+	return Block;
+}
+
+void Book::SetInfo(string type) {
+	PrintedProducts::SetInfo(type);
+	PublishYear=prov("Enter the year of publishing: ",2020);
+	cout << "Enter the genre of the book: ";
+	getline(cin, genre, '\n');
+}
+
+Book::~Book()
+{
+}
+
+
+class Poster: public PrintedProducts
+{
+public:
+	Poster();
+	void print();
+	string FormBlock(int);
+	void SetInfo(string);
+	~Poster();
+
+private:
+	float hight;
+	float width;
+};
+
+Poster::Poster()
+{
+	width = 0;
+	hight = 0;
+}
+
+void Poster::print(){
+	PrintedProducts::print();
+	cout << "Poster size:\t" << hight << "x" << width << endl;
+}
+
+string Poster::FormBlock(int CurrentNumber) {
+	string Block = PrintedProducts::FormBlock(CurrentNumber);
+	Block += "Poster size:\t";
+	Block += to_string(hight);
+	Block += "x";
+	Block += to_string(width);
+	Block += " cm\n";
+	return Block;
+}
+
+void Poster::SetInfo(string type) {
+	PrintedProducts::SetInfo(type);
+	cout << "Enter the size of the poster:\n";
+	width=prov("width: ");
+	hight=prov("higth: ");
+}
+
+Poster::~Poster()
+{
+}
+
+
+class Map:public PrintedProducts
+{
+public:
+	Map();
+	void print();
+	string FormBlock(int);
+	void SetInfo(string);
+	~Map();
+
+private:
+	int PublishYear;
+	int scale;
+};
+
+Map::Map()
+{
+	PublishYear = 0;
+	scale = 0;
+}
+
+void Map::print() {
+	PrintedProducts::print();
+	cout << "Year of publishing:\t" << PublishYear << endl;
+	cout << "Scale:\t1x" << scale << endl;
+
+}
+
+string Map::FormBlock(int CurrentNumber) {
+	string Block = PrintedProducts::FormBlock(CurrentNumber);
+	char temp[10] = { '\0' };
+	Block += "Published in:\t";
+	Block += to_string(PublishYear);
+	Block += "\nScale:\t1x";
+	Block += to_string(scale);
+	Block += "\n";
+	return Block;
+}
+
+void Map::SetInfo(string type) {
+	PrintedProducts::SetInfo(type);
+	PublishYear=prov("Enter the year of publishing: ",2020);
+	scale=prov("Enter the scale of the map: 1x",2500000);
+}
+
+Map::~Map()
+{
+}
+
+
+
+class Department
+{
+public:
+	Department();
+	Department(const Department&);
+	string GetType();
+	void SetDepartment();
+	void Show();
+	void ShowName();
+	void Delete(int);
+	int GetSize();
+	void Change(int);
+	void PrintInFile();
+	void Add(PrintedProducts*);
+	Department(string, string);
+	~Department();
+
+private:
+	string name;
+	string TypeOfProduct;
+	vector<PrintedProducts*> PublishedProducts;
+};
+
+Department::Department()
+{
+	name = "N/A";
+	TypeOfProduct = "N/A";
+}
+
+Department::Department(const Department& Department) {
+	name = Department.name;
+	TypeOfProduct = Department.TypeOfProduct;
+}
+
+void Department::SetDepartment() {
+	char choose;
+	cout << "Enter the name of the department: ";
+	getline(cin, name, '\n');
+	cout << "Choose the type of prodused product:\n1-Book\n2-Poster\n3-Map\n";
+	do {
+		choose = _getch();
+		if (choose == '1') TypeOfProduct = "Book";
+		else if (choose == '2') TypeOfProduct = "Poster";
+		else if (choose=='3') TypeOfProduct = "Map";
+	} while (choose > '3'||choose<'1');
+}
+
+string Department::GetType() {
+	return TypeOfProduct;
+}
+
+void Department::ShowName() {
+	cout << name << endl;
+}
+
+int Department::GetSize() {
+	return int(PublishedProducts.size());
+}
+
+void Department::Show() {
+	cout << "Department:\t" << name<<endl;
+	cout << "Type of manufactured products:\t" << TypeOfProduct<<endl;
+	cout << "List of manufactured products:" << endl;
+	for (int i = 0; i < int(PublishedProducts.size()); i++) {
+		cout<<endl<< i + 1 << ".\n";
+		PublishedProducts[i]->print();
+	}
+	
+}
+
+void Department::Change(int position) {
+	PublishedProducts[position]->SetInfo(TypeOfProduct);
+}
+
+void Department::PrintInFile() {
+	string FileName = name;
+	FileName += ".txt";
+	ofstream file;
+	file.open(FileName,ios::trunc);
+	if (file.is_open()) file << name;
+	file.close();
+	for (int i = 0; i<int(PublishedProducts.size()); i++) {
+		PublishedProducts[i]->InFile(FileName,PublishedProducts[i]->FormBlock(i + 1));
+	}
+
+}
+
+void Department::Add(PrintedProducts* NewProduct) {
+	PublishedProducts.push_back(NewProduct);
+}
+
+void Department::Delete(int position) {
+	delete  PublishedProducts[position];
+	PublishedProducts.erase(PublishedProducts.cbegin() + position);
+}
+
+Department::Department(string name, string TypeOfProduct) {
+	this->name = name;
+	this->TypeOfProduct = TypeOfProduct;
+}
+
+Department::~Department()
+{
+	for (int i = 0; i < int(PublishedProducts.size()); i++) {
+		delete PublishedProducts[i];
+	}
+	PublishedProducts.clear();
+}
+
+
+int prov(const char* t, int maxSize) {
+	int x;
+	cout << t;
+	while (!(cin >> x) || x < 0 || x > maxSize || cin.get() != '\n') {
+		cout << "Invalid input. \nTry again.\n" << t;
+		cin.clear();
+		while (cin.get() != '\n');
+	}
+
+	return(x);
+}
+
+float prov(const char* t) {
+	float x;
+	cout << t;
+	while (!(cin >> x) || x < 0 || cin.get() != '\n') {
+		cout << "Invalid input. \nTry again.\n" << t;
+		cin.clear();
+		while (cin.get() != '\n');
+	}
+
+	return(x);
+}
+
+void WorkInDepartment(Department* NewDepartment) {
+	int choose, kod = 0;
+	int i = 0;
+	string type;
+	PrintedProducts* product;
+	do {
+		system("pause");
+		system("cls");
+		cout << "  Choose option:\n"
+			"1-Add new prodused product.\n"
+			"2-Delete prodesed product.\n"
+			"3-Show list produced produts.\n"
+			"4-Change prodused product.\n"
+			"5-Add info in file.\n"
+			"0-Stop working with department." << endl;
+		switch (_getch()) {
+		case'1': {
+			if (NewDepartment->GetType() == "Book") {
+				product = new Book;
+				type = "Book";
+			}
+			else if (NewDepartment->GetType() == "Poster") {
+				product = new Poster;
+				type = "Poster";
+			}
+			else {
+				product = new Map;
+				type = "Map";
+			}
+			system("cls");
+			product->SetInfo(type);
+			NewDepartment->Add(product);
+
+			break; }
+		case '2': {
+			system("cls");
+			if (NewDepartment->GetSize() == 0) {
+				cout << "You need to create at leasr one product.";
+					break;
+			}
+			NewDepartment->Show();
+			choose = prov("\nChoose tne number of product you want to delete:", NewDepartment->GetSize());
+			NewDepartment->Delete(choose - 1);
+			break; }
+		case'3': {
+			system("cls");
+			NewDepartment->Show();
+			break; }
+
+		case '4': {
+			system("cls");
+			if (NewDepartment->GetSize() == 0) {
+				cout << "You need to create at leasr one product.";
+				break;
+			}
+			NewDepartment->Show();
+			choose = prov("\nChoose tne number of product you want to change:", NewDepartment->GetSize());
+			NewDepartment->Change(choose - 1);
+			break; }
+		case '5': {
+			system("cls");
+			NewDepartment->PrintInFile();
+			break; }
+		case'0': {cout << "Closing." << endl;
+			kod = 1;
+		}
+		}
+	} while (kod == 0);
+
+
+
+}
+
+void ShowName( vector<Department>* department) {
+	for (int i = 0; i < int(department->size()); i++) {
+		cout << i + 1 << ".\t";
+		(*department)[i].ShowName();
+	}
+}
+
+
+
+int main() {
+	int choose, kod = 0;
+	char des;
+	int i = 0;
+	string name, type;
+	vector<Department> department;
+
+	do {
+		system("pause");
+		system("cls");
+		cout << "  Choose option:\n"
+			"1-Add new empty Department.\n"
+			"2-Add new Department with custom information.\n"
+			"3-Copy Department to new one without prodused products.\n"
+			"4-Edit the Department.\n"
+			"5-Delete Department from the list.\n"
+			"6-Show list of departments.\n"
+			"7-Work in Department.\n"
+			"0-Close program." << endl;
+		switch (_getch()) {
+		case'1': {
+			Department NewDepartment;
+			department.push_back(NewDepartment);
+			break; }
+		case '2': {
+			cout << "Enter the name of the Department:";
+			getline(cin, name, '\n');
+			cout << "Choose the type of prodused product:\n1-Book\n2-Poster\n3-Map\n";
+			do {
+				des = _getch();
+				if (des == '1') type = "Book";
+				else if (des == '2') type = "Poster";
+				else if (des == '3') type = "Map";
+			} while (des > '3' || des < '1');
+			Department NewDepartment(name,type);
+			department.push_back(NewDepartment);
+			break; }
+		case'3': {
+			if (department.empty()) {
+				cout << "You need to create at least one Department.\n";
+				break;
+			}
+			cout << "Choose the Department that you want to copy:\n";
+			ShowName(&department);
+			choose = prov("Your choise:", department.size());
+			Department NewDepartment(department[choose-1]);
+			department.push_back(NewDepartment);
+			break; }
+		case '4': {
+			cout << "Choose the Department you want to edit:\n";
+			ShowName(&department);
+			choose = prov("Your choise:", department.size());
+			department[choose - 1].SetDepartment();
+			break; }
+		case '5': {
+			if (department.empty()) {
+				cout << "You need to create at least one Department.\n";
+				break;
+			}
+			cout << "Choose the Department you want to delete:\n";
+			ShowName(&department);
+			choose = prov("Your choise:", department.size());
+			department[choose-1].~Department();
+			department.erase(department.cbegin()+choose-1);
+			
+			break; }
+		case '6': {
+			cout << "List of Departments:\n";
+			ShowName(&department);
+			break; }
+		case '7': {
+			cout << "Choose the Department in which you want to work with products:\n";
+			ShowName(&department);
+			choose = prov("Your choise:", department.size());
+			WorkInDepartment(&department[choose-1]);
+			break; }
+		case'0': {cout << "Closing." << endl;
+			for (i = 0; i < int(department.size()); i++) {
+				department[i].~Department();
+			}
+			department.clear();
+			kod = 1;
+		}
+		}
+	} while (kod == 0);
+}
